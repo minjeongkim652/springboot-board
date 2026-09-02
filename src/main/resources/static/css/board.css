@@ -1,0 +1,355 @@
+/* ==========================================================
+   게시판 공통 스타일 - 클린 플랫 버전
+   ========================================================== */
+
+:root {
+    --text: #333333;
+    --text-muted: #999999;
+    --text-faint: #bbbbbb;
+    --border: #ececec;
+    --border-strong: #e2e2e2;
+    --bg: #ffffff;
+    --bg-subtle: #fafafa;
+    --accent: #4a90e2;
+    --accent-hover: #3579cc;
+    --danger: #e0554a;
+    --danger-hover: #c8483e;
+
+    --font-sans: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+/* ---------- 헤더 ---------- */
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.site-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+}
+
+/* ---------- 버튼 ---------- */
+
+.btn {
+    appearance: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-ghost {
+    background: #fff;
+    color: var(--text-muted);
+    border-color: var(--border-strong);
+}
+
+.btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--text-muted);
+}
+
+.btn-danger {
+    background: #fff;
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
+.list-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* ---------- 목록 테이블 ---------- */
+
+.board-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--text);
+}
+
+.board-table thead th {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-strong);
+    text-align: center;
+}
+
+.board-table thead th.col-no {
+    width: 60px;
+}
+
+.board-table thead th.col-title {
+    text-align: left;
+}
+
+.board-table thead th.col-writer,
+.board-table thead th.col-date,
+.board-table thead th.col-hits {
+    width: 110px;
+}
+
+.board-table tbody tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.board-table tbody tr:hover {
+    background: var(--bg-subtle);
+}
+
+.board-table td {
+    padding: 13px 10px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.col-no {
+    color: var(--text-faint);
+}
+
+.col-title {
+    text-align: left;
+}
+
+.col-title a {
+    color: var(--text);
+}
+
+.col-title a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 64px 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.empty-state p {
+    margin: 0 0 6px;
+}
+
+.empty-state-sub {
+    font-size: 13px;
+    color: var(--text-faint);
+}
+
+/* ---------- 상세 페이지 ---------- */
+
+.detail-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    padding-top: 16px;
+    border-top: 1px solid var(--text);
+}
+
+.detail-sub {
+    display: flex;
+    gap: 16px;
+    margin: 0 0 20px;
+    padding: 0 0 16px;
+    list-style: none;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-strong);
+}
+
+.detail-body {
+    padding: 24px 2px;
+    min-height: 160px;
+    white-space: pre-wrap;
+    font-size: 15px;
+    line-height: 1.8;
+    border-bottom: 1px solid var(--border);
+}
+
+.detail-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+/* ---------- 폼 (글쓰기 / 수정) ---------- */
+
+.board-form {
+    padding-top: 16px;
+    border-top: 1px solid var(--text);
+}
+
+.field {
+    margin-bottom: 18px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.field input[type="text"],
+.field input[type="password"],
+.field textarea {
+    width: 100%;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    background: #fff;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--text);
+    padding: 10px 12px;
+    transition: border-color 120ms ease;
+}
+
+.field input[readonly] {
+    color: var(--text-muted);
+    background: var(--bg-subtle);
+}
+
+.field textarea {
+    resize: vertical;
+    line-height: 1.7;
+}
+
+.field input:focus,
+.field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.alert {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    background: #fdecea;
+    color: var(--danger-hover);
+    border: 1px solid var(--danger);
+}
+
+/* ---------- 반응형 ---------- */
+
+@media (max-width: 640px) {
+    .page {
+        padding: 32px 16px 64px;
+    }
+
+    .board-table thead {
+        display: none;
+    }
+
+    .board-table, .board-table tbody, .board-table tr, .board-table td {
+        display: block;
+        width: auto;
+    }
+
+    .board-table tbody tr {
+        padding: 12px 4px;
+    }
+
+    .board-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 4px 6px;
+        text-align: right;
+    }
+
+    .board-table td::before {
+        content: attr(data-label);
+        font-size: 12px;
+        color: var(--text-faint);
+        text-align: left;
+    }
+
+    .col-title {
+        order: -1;
+    }
+
+    .col-title a {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .detail-actions, .form-actions {
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        flex: 1;
+    }
+}
