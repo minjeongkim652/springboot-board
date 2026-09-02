@@ -2,6 +2,9 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.BoardDTO;
 import com.example.demo.service.BoardService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,14 +40,14 @@ public class BoardController {
         model.addAttribute("boardList", boardDTOList);
         return "list";
     }
-
-    @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model) {
-        boardService.updateHits(id);
-        BoardDTO boardDTO = boardService.findById(id);
-        model.addAttribute("board", boardDTO);
-        return "detail";
-    }
+//
+//    @GetMapping("/{id}")
+//    public String findById(@PathVariable Long id, Model model) {
+//        boardService.updateHits(id);
+//        BoardDTO boardDTO = boardService.findById(id);
+//        model.addAttribute("board", boardDTO);
+//        return "detail";
+//    }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
@@ -69,4 +72,42 @@ public class BoardController {
             return "redirect:/board/update/" + boardDTO.getId();
         }
     }
+    
+    //와그작쿠키
+    @GetMapping("/{id}")
+    public String findById(@PathVariable Long id, Model model,
+                           HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie oldCookie = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("boardView")) {
+                    oldCookie = cookie;
+                }
+            }
+        }
+
+        if (oldCookie != null) {
+            if (!oldCookie.getValue().contains("[" + id + "]")) {
+                boardService.updateHits(id);
+                oldCookie.setValue(oldCookie.getValue() + "[" + id + "]");
+                oldCookie.setPath("/");
+                oldCookie.setMaxAge(60 * 60 * 24); // 24시간
+                response.addCookie(oldCookie);
+            }
+            // 이미 본 글이면 아무것도 안 하고 그냥 넘어감
+        } else {
+            boardService.updateHits(id);
+            Cookie newCookie = new Cookie("boardView", "[" + id + "]");
+            newCookie.setPath("/");
+            newCookie.setMaxAge(60 * 60 * 24);
+            response.addCookie(newCookie);
+        }
+
+        BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("board", boardDTO);
+        return "detail";
+    }
 }
+
