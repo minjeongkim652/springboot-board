@@ -119,6 +119,29 @@ a {
     margin-top: 20px;
 }
 
+/* ---------- 검색창 ---------- */
+
+.search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.search-bar input[type="text"] {
+    flex: 1;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 9px 12px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--text);
+}
+
+.search-bar input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
 /* ---------- 목록 테이블 ---------- */
 
 .board-table {

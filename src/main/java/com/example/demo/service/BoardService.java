@@ -71,5 +71,13 @@ public class BoardService {
         }
     }
 
-
+    public List<BoardDTO> searchList(String searchKeyword) {
+        List<BoardEntity> boardEntityList =
+                boardRepository.findByBoardTitleContainingOrBoardWriterContaining(searchKeyword, searchKeyword);
+        List<BoardDTO> boardDTOList = new ArrayList<>();
+        for (BoardEntity boardEntity : boardEntityList) {
+            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
+        }
+        return boardDTOList;
+    }
 }

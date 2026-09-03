@@ -14,6 +14,14 @@
         <h1 class="site-title">자유게시판</h1>
     </header>
 
+    <form class="search-bar" action="/board/" method="get">
+        <input type="text" name="searchKeyword" placeholder="제목 또는 글쓴이 검색"
+               th:value="${searchKeyword}">
+        <button type="submit" class="btn btn-ghost">검색</button>
+        <a th:if="${searchKeyword != null and !#strings.isEmpty(searchKeyword)}"
+           class="btn btn-ghost" href="/board/">초기화</a>
+    </form>
+
     <table class="board-table" th:unless="${#lists.isEmpty(boardList)}">
         <thead>
         <tr>
@@ -28,7 +36,8 @@
         <tr th:each="board, iterStat: ${boardList}">
             <td class="col-no" data-label="No" th:text="${iterStat.count}"></td>
             <td class="col-title" data-label="제목">
-                <a th:href="@{|/board/${board.id}|}" th:text="${board.boardTitle}"></a>
+                <a th:href="@{|/board/${board.id}|}"
+                   th:text="${#strings.isEmpty(board.boardTitle)} ? '(제목 없음)' : ${board.boardTitle}"></a>
             </td>
             <td class="col-writer" data-label="글쓴이" th:text="${board.boardWriter}"></td>
             <td class="col-date" data-label="작성일" th:text="${board.boardCreatedAt}"></td>
@@ -38,7 +47,12 @@
     </table>
 
     <div class="empty-state" th:if="${#lists.isEmpty(boardList)}">
-        <p>등록된 글이 없습니다.</p>
+        <p th:if="${searchKeyword != null and !#strings.isEmpty(searchKeyword)}">
+            '<span th:text="${searchKeyword}"></span>' 검색 결과가 없습니다.
+        </p>
+        <p th:unless="${searchKeyword != null and !#strings.isEmpty(searchKeyword)}">
+            등록된 글이 없습니다.
+        </p>
         <p class="empty-state-sub">첫 번째 글을 남겨보세요.</p>
     </div>
 

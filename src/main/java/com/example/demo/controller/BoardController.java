@@ -8,10 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -35,25 +32,18 @@ public class BoardController {
     }
 
     @GetMapping("/")
-    public String findAll(Model model) {
-        List<BoardDTO> boardDTOList = boardService.findAll();
+    public String findAll(@RequestParam(required = false) String searchKeyword, Model model) {
+        List<BoardDTO> boardDTOList;
+        if (searchKeyword != null && !searchKeyword.isBlank()) {
+            boardDTOList = boardService.searchList(searchKeyword);
+        } else {
+            boardDTOList = boardService.findAll();
+        }
         model.addAttribute("boardList", boardDTOList);
+        model.addAttribute("searchKeyword", searchKeyword);
         return "list";
     }
-//
-//    @GetMapping("/{id}")
-//    public String findById(@PathVariable Long id, Model model) {
-//        boardService.updateHits(id);
-//        BoardDTO boardDTO = boardService.findById(id);
-//        model.addAttribute("board", boardDTO);
-//        return "detail";
-//    }
 
-//    @GetMapping("/delete/{id}")
-//    public String delete(@PathVariable Long id) {
-//        boardService.delete(id);
-//        return "redirect:/board/";
-//    }
 
     @GetMapping("/delete/{id}")
     public String deleteForm(@PathVariable Long id, Model model) {
