@@ -17,6 +17,9 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     public void save(BoardDTO boardDTO) {
+        if (boardDTO.getBoardTitle() == null || boardDTO.getBoardTitle().isBlank()) {
+            throw new IllegalArgumentException("제목을 입력해주세요.");
+        }
         BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
         boardRepository.save(boardEntity);
     }
@@ -48,7 +51,15 @@ public class BoardService {
     public void delete(Long id) {
         boardRepository.deleteById(id);
     }
-
+    public void delete(BoardDTO boardDTO) {
+        BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+        if (boardEntity.getBoardPass().equals(boardDTO.getBoardPass())) {
+            boardRepository.deleteById(boardDTO.getId());
+        } else {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+    }
     @Transactional
     public void update(BoardDTO boardDTO) {
         BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() ->
@@ -59,4 +70,6 @@ public class BoardService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
     }
+
+
 }

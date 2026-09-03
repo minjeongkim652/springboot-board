@@ -49,10 +49,28 @@ public class BoardController {
 //        return "detail";
 //    }
 
+//    @GetMapping("/delete/{id}")
+//    public String delete(@PathVariable Long id) {
+//        boardService.delete(id);
+//        return "redirect:/board/";
+//    }
+
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        boardService.delete(id);
-        return "redirect:/board/";
+    public String deleteForm(@PathVariable Long id, Model model) {
+        BoardDTO boardDTO = boardService.findById(id);
+        model.addAttribute("board", boardDTO);
+        return "delete";
+    }
+
+    @PostMapping("/delete")
+    public String delete(BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
+        try {
+            boardService.delete(boardDTO);
+            return "redirect:/board/";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/board/delete/" + boardDTO.getId();
+        }
     }
 
     @GetMapping("/update/{id}")

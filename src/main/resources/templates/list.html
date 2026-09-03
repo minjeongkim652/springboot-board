@@ -25,8 +25,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="board: ${boardList}">
-            <td class="col-no" data-label="No" th:text="${board.id}"></td>
+        <tr th:each="board, iterStat: ${boardList}">
+            <td class="col-no" data-label="No" th:text="${iterStat.count}"></td>
             <td class="col-title" data-label="제목">
                 <a th:href="@{|/board/${board.id}|}" th:text="${board.boardTitle}"></a>
             </td>
