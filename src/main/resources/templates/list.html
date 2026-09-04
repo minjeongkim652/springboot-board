@@ -4,25 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+          rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/css/board.css}">
 </head>
+
 <body>
+
 <div class="page">
+
     <header class="page-header">
         <h1 class="site-title">자유게시판</h1>
     </header>
 
+    <!-- 검색 -->
     <form class="search-bar" action="/board/" method="get">
-        <input type="text" name="searchKeyword" placeholder="제목 또는 글쓴이 검색"
+
+        <input type="text"
+               name="searchKeyword"
+               placeholder="제목 또는 글쓴이 검색"
                th:value="${searchKeyword}">
-        <button type="submit" class="btn btn-ghost">검색</button>
+
+        <button type="submit" class="btn btn-ghost">
+            검색
+        </button>
+
         <a th:if="${searchKeyword != null and !#strings.isEmpty(searchKeyword)}"
-           class="btn btn-ghost" href="/board/">초기화</a>
+           class="btn btn-ghost"
+           href="/board/">
+            초기화
+        </a>
+
     </form>
 
-    <table class="board-table" th:unless="${#lists.isEmpty(boardList)}">
+
+    <!-- 게시글 목록 -->
+    <table class="board-table"
+           th:unless="${#lists.isEmpty(boardList)}">
+
         <thead>
         <tr>
             <th class="col-no">No</th>
@@ -32,38 +54,89 @@
             <th class="col-hits">조회수</th>
         </tr>
         </thead>
+
         <tbody>
-        <tr th:each="board, iterStat: ${boardList}">
-            <td class="col-no" data-label="No" th:text="${iterStat.count}"></td>
-            <td class="col-title" data-label="제목">
-                <a th:href="@{|/board/${board.id}|}"
-                   th:text="${#strings.isEmpty(board.boardTitle)} ? '(제목 없음)' : ${board.boardTitle}"></a>
+
+        <tr th:each="board, iterStat : ${boardList}">
+
+            <!-- 게시글 순번 -->
+            <td class="col-no"
+                data-label="No"
+                th:text="${iterStat.count}">
             </td>
-            <td class="col-writer" data-label="글쓴이" th:text="${board.boardWriter}"></td>
-            <td class="col-date" data-label="작성일" th:text="${board.boardCreatedAt}"></td>
-            <td class="col-hits" data-label="조회수" th:text="${board.boardHits}"></td>
+
+            <!-- 제목 -->
+            <td class="col-title" data-label="제목">
+
+                <a th:href="@{|/board/${board.id}|}"
+                   th:text="${#strings.isEmpty(board.boardTitle)} ? '(제목 없음)' : ${board.boardTitle}">
+                </a>
+
+            </td>
+
+            <!-- 작성자 -->
+            <td class="col-writer"
+                data-label="글쓴이"
+                th:text="${board.boardWriter}">
+            </td>
+
+            <!-- 작성일 -->
+            <td class="col-date"
+                data-label="작성일"
+                th:text="${#temporals.format(board.boardCreatedAt, 'yyyy-MM-dd HH:mm')}">
+            </td>
+
+            <!-- 조회수 -->
+            <td class="col-hits"
+                data-label="조회수"
+                th:text="${board.boardHits}">
+            </td>
+
         </tr>
+
         </tbody>
     </table>
 
-    <div class="empty-state" th:if="${#lists.isEmpty(boardList)}">
+
+    <!-- 게시글이 없을 때 -->
+    <div class="empty-state"
+         th:if="${#lists.isEmpty(boardList)}">
+
         <p th:if="${searchKeyword != null and !#strings.isEmpty(searchKeyword)}">
             '<span th:text="${searchKeyword}"></span>' 검색 결과가 없습니다.
         </p>
+
         <p th:unless="${searchKeyword != null and !#strings.isEmpty(searchKeyword)}">
             등록된 글이 없습니다.
         </p>
-        <p class="empty-state-sub">첫 번째 글을 남겨보세요.</p>
+
+        <p class="empty-state-sub">
+            첫 번째 글을 남겨보세요.
+        </p>
+
     </div>
 
+
+    <!-- 글쓰기 -->
     <div class="list-footer">
-        <button class="btn btn-primary" onclick="saveReq()">글쓰기</button>
+
+        <button class="btn btn-primary"
+                onclick="saveReq()">
+            글쓰기
+        </button>
+
     </div>
+
 </div>
+
+
 <script>
+
     const saveReq = () => {
         location.href = "/board/save";
     }
+
 </script>
+
 </body>
 </html>
