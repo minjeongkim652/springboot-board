@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.MemberDTO;
 import com.example.demo.service.MemberService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,26 +29,12 @@ public class MemberController {
         }
     }
 
+    // 로그인 화면 "보여주기"는 여전히 우리 몫 (Security는 화면 렌더링은 안 해줌)
     @GetMapping("/member/login")
     public String loginForm() {
         return "login";
     }
 
-    @PostMapping("/member/login")
-    public String login(MemberDTO memberDTO, HttpSession session, RedirectAttributes redirectAttributes) {
-        try {
-            MemberDTO loginMember = memberService.login(memberDTO);
-            session.setAttribute("loginMember", loginMember); // 로그인 성공 -> 세션에 저장
-            return "redirect:/board/";
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/member/login";
-        }
-    }
-
-    @GetMapping("/member/logout")
-    public String logout(HttpSession session) {
-        session.invalidate(); // 세션 통째로 폐기 -> 로그인 정보 사라짐
-        return "redirect:/board/";
-    }
+    // 로그인 POST 처리, 로그아웃 처리는 이제 SecurityConfig가 자동으로 가로채서 처리하니까
+    // 여기엔 더 이상 관련 메서드가 없음! (예전 login(), logout() 메서드 삭제됨)
 }

@@ -14,7 +14,7 @@
     <h1 class="site-title">로그인</h1>
   </header>
 
-  <div class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+  <div class="alert" th:if="${param.error != null}">아이디 또는 비밀번호가 일치하지 않습니다.</div>
 
   <form class="board-form" action="/member/login" method="post">
     <div class="field">
@@ -31,8 +31,5 @@
     </div>
   </form>
 </div>
-<script th:if="${errorMessage}">
-  alert('[[${errorMessage}]]');
-</script>
 </body>
 </html>
