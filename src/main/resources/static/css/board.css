@@ -53,6 +53,30 @@ a {
     margin-bottom: 24px;
 }
 
+.nav-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.nav-auth a {
+    color: var(--accent);
+}
+
+.nav-auth a:hover {
+    text-decoration: underline;
+}
+
 .site-title {
     font-size: 22px;
     font-weight: 700;
