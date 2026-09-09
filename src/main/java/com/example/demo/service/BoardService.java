@@ -17,9 +17,6 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     public void save(BoardDTO boardDTO) {
-        if (boardDTO.getBoardTitle() == null || boardDTO.getBoardTitle().isBlank()) {
-            throw new IllegalArgumentException("제목을 입력해주세요.");
-        }
         BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
         boardRepository.save(boardEntity);
     }
@@ -27,7 +24,17 @@ public class BoardService {
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardDTOList = new ArrayList<>();
-        for (BoardEntity boardEntity: boardEntityList) {
+        for (BoardEntity boardEntity : boardEntityList) {
+            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
+        }
+        return boardDTOList;
+    }
+
+    public List<BoardDTO> searchList(String searchKeyword) {
+        List<BoardEntity> boardEntityList =
+                boardRepository.findByBoardTitleContainingOrBoardWriterContaining(searchKeyword, searchKeyword);
+        List<BoardDTO> boardDTOList = new ArrayList<>();
+        for (BoardEntity boardEntity : boardEntityList) {
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
         return boardDTOList;
@@ -48,36 +55,26 @@ public class BoardService {
         }
     }
 
-    public void delete(Long id) {
+    // 소유권 확인 후 삭제 (비번 대신 로그인 아이디 비교)
+    public void delete(Long id, String currentMemberId) {
+        BoardEntity boardEntity = boardRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+
+        if (!boardEntity.getMemberId().equals(currentMemberId)) {
+            throw new IllegalArgumentException("본인이 작성한 글만 삭제할 수 있습니다.");
+        }
         boardRepository.deleteById(id);
     }
-    public void delete(BoardDTO boardDTO) {
-        BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
-        if (boardEntity.getBoardPass().equals(boardDTO.getBoardPass())) {
-            boardRepository.deleteById(boardDTO.getId());
-        } else {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-    }
-    @Transactional
-    public void update(BoardDTO boardDTO) {
-        BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
-        if (boardEntity.getBoardPass().equals(boardDTO.getUpdatePass())) {
-            boardEntity.update(boardDTO);
-        } else {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-    }
 
-    public List<BoardDTO> searchList(String searchKeyword) {
-        List<BoardEntity> boardEntityList =
-                boardRepository.findByBoardTitleContainingOrBoardWriterContaining(searchKeyword, searchKeyword);
-        List<BoardDTO> boardDTOList = new ArrayList<>();
-        for (BoardEntity boardEntity : boardEntityList) {
-            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
+    // 소유권 확인 후 수정
+    @Transactional
+    public void update(BoardDTO boardDTO, String currentMemberId) {
+        BoardEntity boardEntity = boardRepository.findById(boardDTO.getId()).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글을 찾을 수 없습니다."));
+
+        if (!boardEntity.getMemberId().equals(currentMemberId)) {
+            throw new IllegalArgumentException("본인이 작성한 글만 수정할 수 있습니다.");
         }
-        return boardDTOList;
+        boardEntity.update(boardDTO);
     }
 }

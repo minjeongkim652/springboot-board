@@ -2,43 +2,32 @@ package com.example.demo.dto;
 
 import com.example.demo.entity.BoardEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
-@ToString
-
+@NoArgsConstructor
 public class BoardDTO {
     private Long id;
-    private String boardWriter;   //작성자
-    private String boardPass;   //비번
-    private String updatePass;
-    private String boardTitle; //제목
-    private String boardContents; //내용
-    private int boardHits; //조회수
-    private String boardCreatedAt;//작성시간
-
-    private String dateFormat(LocalDateTime date) {
-        if(date == null)
-            return null;
-
-        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-    }
-
+    private String boardTitle;
+    private String boardWriter;
+    private String memberId;     // 작성자 로그인 아이디 (소유권 확인용)
+    private String boardContents;
+    private int boardHits;
+    private LocalDateTime boardCreatedAt;
 
     public static BoardDTO toBoardDTO(BoardEntity boardEntity) {
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setId(boardEntity.getId());
-        boardDTO.setBoardWriter(boardEntity.getBoardWriter());
-        boardDTO.setBoardPass(boardEntity.getBoardPass());
         boardDTO.setBoardTitle(boardEntity.getBoardTitle());
+        boardDTO.setBoardWriter(boardEntity.getBoardWriter());
+        boardDTO.setMemberId(boardEntity.getMemberId());
         boardDTO.setBoardContents(boardEntity.getBoardContents());
         boardDTO.setBoardHits(boardEntity.getBoardHits());
-        boardDTO.setBoardCreatedAt(boardDTO.dateFormat(boardEntity.getCreatedAt()));  //??좀다름
+        boardDTO.setBoardCreatedAt(boardEntity.getBoardCreatedAt());
         return boardDTO;
     }
 }

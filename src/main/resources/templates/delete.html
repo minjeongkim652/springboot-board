@@ -14,26 +14,17 @@
         <h1 class="site-title">글삭제</h1>
     </header>
 
-    <div class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
-
     <p class="detail-sub" style="border-bottom:none; margin-bottom:20px;">
-        <span th:text="${board.boardTitle}"></span> 글을 삭제하려면 비밀번호를 입력하세요.
+        <span th:text="${board.boardTitle}"></span> 글을 정말 삭제하시겠습니까? 되돌릴 수 없습니다.
     </p>
 
     <form class="board-form" action="/board/delete" method="post">
         <input type="hidden" name="id" th:value="${board.id}">
-        <div class="field">
-            <label for="boardPass">비밀번호</label>
-            <input type="password" id="boardPass" name="boardPass" required autofocus>
-        </div>
         <div class="form-actions">
             <a class="btn btn-ghost" th:href="@{|/board/${board.id}|}">취소</a>
             <button type="submit" class="btn btn-danger">삭제</button>
         </div>
     </form>
 </div>
-<script th:if="${errorMessage}">
-    alert('[[${errorMessage}]]');
-</script>
 </body>
 </html>

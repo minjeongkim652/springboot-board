@@ -48,7 +48,8 @@
                    th:text="${#strings.isEmpty(board.boardTitle)} ? '(제목 없음)' : ${board.boardTitle}"></a>
             </td>
             <td class="col-writer" data-label="글쓴이" th:text="${board.boardWriter}"></td>
-            <td class="col-date" data-label="작성일" th:text="${board.boardCreatedAt}"></td>
+            <td class="col-date" data-label="작성일"
+                th:text="${#temporals.format(board.boardCreatedAt, 'yyyy-MM-dd HH:mm')}"></td>
             <td class="col-hits" data-label="조회수" th:text="${board.boardHits}"></td>
         </tr>
         </tbody>

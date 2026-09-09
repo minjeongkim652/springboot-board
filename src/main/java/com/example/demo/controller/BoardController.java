@@ -11,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -20,8 +21,6 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
 
-    // 이 URL 자체가 이미 SecurityConfig에서 "로그인 필요"로 막혀있어서,
-    // 여기까지 들어왔다는 건 이미 로그인된 상태라는 뜻 -> 별도 체크 코드 필요 없음!
     @GetMapping("/save")
     public String saveForm() {
         return "save";
@@ -29,8 +28,8 @@ public class BoardController {
 
     @PostMapping("/save")
     public String save(BoardDTO boardDTO, @AuthenticationPrincipal MemberDetails memberDetails) {
-        // 로그인한 회원의 닉네임을 작성자로 자동 지정
         boardDTO.setBoardWriter(memberDetails.getMemberEntity().getMemberNickname());
+        boardDTO.setMemberId(memberDetails.getMemberEntity().getMemberId()); // 소유권 확인용 아이디 같이 저장
         boardService.save(boardDTO);
         return "redirect:/board/";
     }
@@ -46,8 +45,6 @@ public class BoardController {
         }
         model.addAttribute("boardList", boardDTOList);
         model.addAttribute("searchKeyword", searchKeyword);
-        // 로그인 안 했으면 memberDetails가 null -> 그대로 null을 모델에 넣으면
-        // list.html의 th:if="${loginMember != null}" 분기가 예전처럼 그대로 동작함
         model.addAttribute("loginMember", memberDetails != null ? memberDetails.getMemberEntity() : null);
         return "list";
     }
@@ -89,39 +86,51 @@ public class BoardController {
         return "detail";
     }
 
+    // 삭제 확인 화면 - 본인 글 아니면 상세페이지로 돌려보냄
     @GetMapping("/delete/{id}")
-    public String deleteForm(@PathVariable Long id, Model model) {
+    public String deleteForm(@PathVariable Long id, Model model,
+                             @AuthenticationPrincipal MemberDetails memberDetails) {
         BoardDTO boardDTO = boardService.findById(id);
+        if (memberDetails == null || !boardDTO.getMemberId().equals(memberDetails.getMemberEntity().getMemberId())) {
+            return "redirect:/board/" + id;
+        }
         model.addAttribute("board", boardDTO);
         return "delete";
     }
 
     @PostMapping("/delete")
-    public String delete(BoardDTO boardDTO, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+    public String delete(@RequestParam Long id, @AuthenticationPrincipal MemberDetails memberDetails,
+                         RedirectAttributes redirectAttributes) {
         try {
-            boardService.delete(boardDTO);
+            boardService.delete(id, memberDetails.getMemberEntity().getMemberId());
             return "redirect:/board/";
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/board/delete/" + boardDTO.getId();
+            return "redirect:/board/" + id;
         }
     }
 
+    // 수정 화면 - 본인 글 아니면 상세페이지로 돌려보냄
     @GetMapping("/update/{id}")
-    public String updateForm(@PathVariable Long id, Model model) {
+    public String updateForm(@PathVariable Long id, Model model,
+                             @AuthenticationPrincipal MemberDetails memberDetails) {
         BoardDTO boardDTO = boardService.findById(id);
+        if (memberDetails == null || !boardDTO.getMemberId().equals(memberDetails.getMemberEntity().getMemberId())) {
+            return "redirect:/board/" + id;
+        }
         model.addAttribute("board", boardDTO);
         return "update";
     }
 
     @PostMapping("/update")
-    public String update(BoardDTO boardDTO, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+    public String update(BoardDTO boardDTO, @AuthenticationPrincipal MemberDetails memberDetails,
+                         RedirectAttributes redirectAttributes) {
         try {
-            boardService.update(boardDTO);
+            boardService.update(boardDTO, memberDetails.getMemberEntity().getMemberId());
             return "redirect:/board/" + boardDTO.getId();
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/board/update/" + boardDTO.getId();
+            return "redirect:/board/" + boardDTO.getId();
         }
     }
 }

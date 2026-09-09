@@ -23,11 +23,6 @@
             <label for="boardWriter">작성자</label>
             <input type="text" id="boardWriter" name="boardWriter" th:value="${board.boardWriter}" readonly>
         </div>
-        <div class="field">
-            <label for="updatePass">비밀번호 확인</label>
-            <input type="password" id="updatePass" name="updatePass" required>
-        </div>
-        <input type="hidden" name="boardPass" th:value="${board.boardPass}">
 
         <div class="field">
             <label for="boardTitle">제목</label>
