@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 import com.example.demo.config.MemberDetails;
 import com.example.demo.dto.BoardDTO;
+import com.example.demo.dto.CommentDTO;
 import com.example.demo.service.BoardService;
+import com.example.demo.service.CommentService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,6 +22,7 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @GetMapping("/save")
     public String saveForm() {
@@ -83,6 +86,8 @@ public class BoardController {
         BoardDTO boardDTO = boardService.findById(id);
         model.addAttribute("board", boardDTO);
         model.addAttribute("loginMember", memberDetails != null ? memberDetails.getMemberEntity() : null);
+        model.addAttribute("commentList", commentService.findByBoardId(id));
+        model.addAttribute("newComment", new CommentDTO());
         return "detail";
     }
 

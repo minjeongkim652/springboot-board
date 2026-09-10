@@ -30,6 +30,60 @@
             <button class="btn btn-danger" onclick="deleteReq()">삭제</button>
         </th:block>
     </div>
+
+    <!-- 댓글 영역 -->
+    <div class="comment-section">
+        <h3 class="comment-heading" th:text="'댓글 ' + ${#lists.size(commentList)} + '개'"></h3>
+
+        <div class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <ul class="comment-list" th:unless="${#lists.isEmpty(commentList)}">
+            <li class="comment" th:each="comment : ${commentList}">
+
+                <!-- 평소엔 이 부분(보기 모드)이 보임 -->
+                <div class="comment-view" th:id="'view-' + ${comment.id}">
+                    <div class="comment-meta">
+                        <span class="comment-writer" th:text="${comment.commentWriter}"></span>
+                        <span class="comment-date"
+                              th:text="${#temporals.format(comment.commentCreatedAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    </div>
+                    <p class="comment-content" th:text="${comment.commentContents}"></p>
+                    <div class="comment-actions"
+                         th:if="${loginMember != null and loginMember.memberId == comment.memberId}">
+                        <button type="button" class="btn-link" th:onclick="'toggleEdit(' + ${comment.id} + ')'">수정</button>
+                        <form th:action="@{/comment/delete}" method="post" style="display:inline">
+                            <input type="hidden" name="id" th:value="${comment.id}">
+                            <input type="hidden" name="boardId" th:value="${board.id}">
+                            <button type="submit" class="btn-link btn-link-danger">삭제</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 수정 버튼 누르면 이 부분(수정 모드)으로 전환 -->
+                <form class="comment-edit-form" th:id="'edit-' + ${comment.id}"
+                      th:action="@{/comment/update}" method="post" style="display:none">
+                    <input type="hidden" name="id" th:value="${comment.id}">
+                    <input type="hidden" name="boardId" th:value="${board.id}">
+                    <textarea name="commentContents" rows="2" required th:text="${comment.commentContents}"></textarea>
+                    <div class="comment-edit-actions">
+                        <button type="button" class="btn btn-ghost" th:onclick="'toggleEdit(' + ${comment.id} + ')'">취소</button>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+            </li>
+        </ul>
+
+        <!-- 로그인했으면 댓글 작성폼, 아니면 로그인 안내 -->
+        <form class="comment-form" th:if="${loginMember != null}"
+              th:action="@{/comment/save}" method="post">
+            <input type="hidden" name="boardId" th:value="${board.id}">
+            <textarea name="commentContents" rows="2" placeholder="댓글을 입력하세요" required></textarea>
+            <button type="submit" class="btn btn-primary">등록</button>
+        </form>
+        <p class="comment-login-notice" th:unless="${loginMember != null}">
+            댓글을 작성하려면 <a href="/member/login">로그인</a>하세요.
+        </p>
+    </div>
 </div>
 <script th:inline="javascript">
     const listReq = () => {
@@ -45,6 +99,15 @@
         console.log("삭제 요청");
         const id = /*[[${board.id}]]*/ 0;
         location.href = `/board/delete/${id}`;
+    }
+
+    // 댓글 하나의 보기 모드 <-> 수정 모드를 화면 새로고침 없이 전환
+    function toggleEdit(commentId) {
+        const viewDiv = document.getElementById('view-' + commentId);
+        const editForm = document.getElementById('edit-' + commentId);
+        const isEditing = editForm.style.display !== 'none';
+        editForm.style.display = isEditing ? 'none' : 'block';
+        viewDiv.style.display = isEditing ? 'block' : 'none';
     }
 </script>
 </body>
