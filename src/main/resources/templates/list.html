@@ -42,14 +42,15 @@
         </thead>
         <tbody>
         <tr th:each="board, iterStat: ${boardList}">
-            <td class="col-no" data-label="No" th:text="${iterStat.count}"></td>
+            <td class="col-no" data-label="No"
+                th:text="${boardPage.number * boardPage.size + iterStat.count}"></td>
             <td class="col-title" data-label="제목">
                 <a th:href="@{|/board/${board.id}|}"
                    th:text="${#strings.isEmpty(board.boardTitle)} ? '(제목 없음)' : ${board.boardTitle}"></a>
             </td>
             <td class="col-writer" data-label="글쓴이" th:text="${board.boardWriter}"></td>
             <td class="col-date" data-label="작성일"
-                th:text="${#temporals.format(board.boardCreatedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                th:text="${board.boardCreatedAt != null} ? ${#temporals.format(board.boardCreatedAt, 'yyyy-MM-dd HH:mm')} : '-'"></td>
             <td class="col-hits" data-label="조회수" th:text="${board.boardHits}"></td>
         </tr>
         </tbody>
@@ -64,6 +65,20 @@
         </p>
         <p class="empty-state-sub">첫 번째 글을 남겨보세요.</p>
     </div>
+
+    <nav class="pagination" th:if="${boardPage.totalPages > 1}">
+        <a th:if="${boardPage.number > 0}" class="page-link"
+           th:href="@{/board/(page=${boardPage.number - 1}, searchKeyword=${searchKeyword})}">이전</a>
+
+        <a th:each="pageNum : ${#numbers.sequence(0, boardPage.totalPages - 1)}"
+           th:href="@{/board/(page=${pageNum}, searchKeyword=${searchKeyword})}"
+           th:text="${pageNum + 1}"
+           th:classappend="${pageNum == boardPage.number} ? ' active'"
+           class="page-link"></a>
+
+        <a th:if="${boardPage.number < boardPage.totalPages - 1}" class="page-link"
+           th:href="@{/board/(page=${boardPage.number + 1}, searchKeyword=${searchKeyword})}">다음</a>
+    </nav>
 
     <div class="list-footer">
         <button class="btn btn-primary" onclick="saveReq()">글쓰기</button>

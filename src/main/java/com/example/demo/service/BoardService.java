@@ -4,11 +4,11 @@ import com.example.demo.dto.BoardDTO;
 import com.example.demo.entity.BoardEntity;
 import com.example.demo.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,23 +21,16 @@ public class BoardService {
         boardRepository.save(boardEntity);
     }
 
-    public List<BoardDTO> findAll() {
-        List<BoardEntity> boardEntityList = boardRepository.findAll();
-        List<BoardDTO> boardDTOList = new ArrayList<>();
-        for (BoardEntity boardEntity : boardEntityList) {
-            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
-        }
-        return boardDTOList;
+    // Page<BoardEntity>를 Page<BoardDTO>로 변환 -> .map()이 Page 안의 내용물만 바꿔주고 페이지 정보는 그대로 유지해줌
+    public Page<BoardDTO> findAll(Pageable pageable) {
+        Page<BoardEntity> boardEntityPage = boardRepository.findAll(pageable);
+        return boardEntityPage.map(BoardDTO::toBoardDTO);
     }
 
-    public List<BoardDTO> searchList(String searchKeyword) {
-        List<BoardEntity> boardEntityList =
-                boardRepository.findByBoardTitleContainingOrBoardWriterContaining(searchKeyword, searchKeyword);
-        List<BoardDTO> boardDTOList = new ArrayList<>();
-        for (BoardEntity boardEntity : boardEntityList) {
-            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
-        }
-        return boardDTOList;
+    public Page<BoardDTO> searchList(String searchKeyword, Pageable pageable) {
+        Page<BoardEntity> boardEntityPage =
+                boardRepository.findByBoardTitleContainingOrBoardWriterContaining(searchKeyword, searchKeyword, pageable);
+        return boardEntityPage.map(BoardDTO::toBoardDTO);
     }
 
     @Transactional

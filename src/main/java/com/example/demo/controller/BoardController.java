@@ -9,13 +9,15 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -39,14 +41,21 @@ public class BoardController {
 
     @GetMapping("/")
     public String findAll(@RequestParam(required = false) String searchKeyword,
+                          @RequestParam(defaultValue = "0") int page,
                           Model model, @AuthenticationPrincipal MemberDetails memberDetails) {
-        List<BoardDTO> boardDTOList;
+
+        // 페이지 크기 10, 정렬 기준은 id 오름차순 (오래된 글이 1번이었던 것과 순서 유지)
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").ascending());
+
+        Page<BoardDTO> boardPage;
         if (searchKeyword != null && !searchKeyword.isBlank()) {
-            boardDTOList = boardService.searchList(searchKeyword);
+            boardPage = boardService.searchList(searchKeyword, pageable);
         } else {
-            boardDTOList = boardService.findAll();
+            boardPage = boardService.findAll(pageable);
         }
-        model.addAttribute("boardList", boardDTOList);
+
+        model.addAttribute("boardPage", boardPage);
+        model.addAttribute("boardList", boardPage.getContent()); // 화면에 뿌릴 실제 목록
         model.addAttribute("searchKeyword", searchKeyword);
         model.addAttribute("loginMember", memberDetails != null ? memberDetails.getMemberEntity() : null);
         return "list";

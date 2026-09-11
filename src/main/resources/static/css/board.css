@@ -143,6 +143,40 @@ a {
     margin-top: 20px;
 }
 
+/* ---------- 페이지네이션 ---------- */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border: 1px solid var(--border-strong);
+}
+
+.page-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.page-link.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
 /* ---------- 검색창 ---------- */
 
 .search-bar {
