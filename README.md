@@ -1,172 +1,154 @@
-# 📋 Spring Boot 게시판
+# 📋 자유게시판 (Spring Boot Board)
 
-Spring Boot와 JPA를 활용하여 구현한 **CRUD 기반 게시판 프로젝트**입니다.
+Spring Boot + Thymeleaf + MySQL로 구현한 회원 인증 기반 게시판입니다. 기본 CRUD에서 출발해 인증/인가, 댓글, 페이징, 검색까지 단계적으로 기능을 확장했습니다.
 
-Spring Boot의 기본적인 계층 구조를 이해하고,
-Controller → Service → Repository → Entity/DTO로 이어지는 데이터 흐름을 직접 구현하는 것을 목표로 제작했습니다.
+## ✨ 주요 기능
 
----
+- 🔐 회원가입 / 로그인 / 로그아웃 (Spring Security, BCrypt 비밀번호 암호화)
+- 📝 게시글 CRUD (작성 / 목록·상세 조회 / 수정 / 삭제)
+- 💬 댓글 CRUD (게시글-댓글 연관관계 매핑)
+- 🔒 소유권 기반 권한 제어 (본인이 작성한 글/댓글만 수정·삭제 가능)
+- 👀 조회수 중복 증가 방지 (쿠키 기반)
+- 🔍 제목/작성자 통합 검색
+- 📄 페이징 처리
+- 📱 반응형 UI (모바일에서 테이블 → 카드형 자동 전환)
 
-## 🛠️ Tech Stack
+## 🛠 기술 스택
 
-| Category | Technology                 |
-| -------- | -------------------------- |
-| Backend  | Java, Spring Boot          |
-| ORM      | Spring Data JPA, Hibernate |
-| Database | MySQL                      |
-| Frontend | HTML, Thymeleaf            |
-| Build    | Gradle                     |
-| IDE      | IntelliJ IDEA              |
+**Backend**
+- Java 21
+- Spring Boot 4.1.1
+- Spring Security
+- Spring Data JPA (Hibernate)
+- Gradle
 
----
+**Frontend**
+- Thymeleaf
+- Vanilla CSS / JavaScript
 
-## ✨ Features
+**Database**
+- MySQL
 
-### 📝 게시글 작성
+## 📁 프로젝트 구조
 
-* 작성자, 비밀번호, 제목, 내용을 입력하여 게시글 작성
-* 작성한 게시글을 MySQL 데이터베이스에 저장
+```
+src/main/java/com/example/demo/
+ ├── config/
+ │    ├── SecurityBeanConfig.java   # PasswordEncoder 빈 등록
+ │    ├── SecurityConfig.java       # URL별 인가 규칙, 로그인/로그아웃 설정
+ │    └── MemberDetails.java        # UserDetails 구현체
+ ├── controller/
+ │    ├── BoardController.java
+ │    ├── CommentController.java
+ │    └── MemberController.java
+ ├── service/
+ │    ├── BoardService.java
+ │    ├── CommentService.java
+ │    ├── MemberService.java
+ │    └── MemberDetailsService.java # UserDetailsService 구현체
+ ├── repository/
+ │    ├── BoardRepository.java
+ │    ├── CommentRepository.java
+ │    └── MemberRepository.java
+ ├── entity/
+ │    ├── BoardEntity.java
+ │    ├── CommentEntity.java        # BoardEntity와 @ManyToOne 연관관계
+ │    └── MemberEntity.java
+ └── dto/
+      ├── BoardDTO.java
+      ├── CommentDTO.java
+      └── MemberDTO.java
 
-### 📚 게시글 목록 조회
-
-* DB에 저장된 전체 게시글 조회
-* 게시글 번호, 제목, 작성자, 작성일, 조회수 표시
-
-### 🔎 게시글 상세 조회
-
-* 게시글 ID를 기반으로 상세 내용 조회
-* 게시글 조회 시 조회수 증가
-
-### ✏️ 게시글 수정
-
-* 게시글 비밀번호 확인
-* 제목 및 내용 수정
-* 비밀번호가 일치하지 않을 경우 예외 처리
-
-### 🗑️ 게시글 삭제
-
-* 게시글 ID를 기반으로 게시글 삭제
-
----
-
-## 🏗️ Project Structure
-
-```text
-src
-└── main
-    ├── java
-    │   └── com.example.demo
-    │       ├── controller
-    │       │   ├── BoardController.java
-    │       │   └── HomeController.java
-    │       │
-    │       ├── service
-    │       │   └── BoardService.java
-    │       │
-    │       ├── repository
-    │       │   └── BoardRepository.java
-    │       │
-    │       ├── entity
-    │       │   ├── BoardEntity.java
-    │       │   └── BaseTimeEntity.java
-    │       │
-    │       └── dto
-    │           └── BoardDTO.java
-    │
-    └── resources
-        ├── templates
-        │   ├── index.html
-        │   ├── list.html
-        │   ├── save.html
-        │   ├── detail.html
-        │   └── update.html
-        │
-        └── application.yml
+src/main/resources/
+ ├── templates/
+ │    ├── join.html / login.html
+ │    └── board/
+ │         ├── list.html / detail.html
+ │         ├── save.html / update.html / delete.html
+ └── static/css/board.css
 ```
 
----
+## 🚀 시작하기
 
-## 🔄 Data Flow
+### 사전 요구사항
 
-게시글 작성부터 DB 저장까지의 흐름은 다음과 같습니다.
+- JDK 21+
+- MySQL 8.x
+- Gradle (프로젝트에 포함된 Gradle Wrapper 사용 가능)
 
-```text
-사용자
-  ↓
-HTML Form
-  ↓
-Controller
-  ↓
-DTO
-  ↓
-Service
-  ↓
-Entity 변환
-  ↓
-Repository
-  ↓
-MySQL
+### 1. 저장소 클론
+
+```bash
+git clone <저장소 URL>
+cd demo
 ```
 
-게시글 조회의 경우에는 반대로 DB에서 데이터를 가져와 화면에 전달합니다.
+### 2. 데이터베이스 생성
 
-```text
-MySQL
-  ↓
-Repository
-  ↓
-Entity
-  ↓
-DTO 변환
-  ↓
-Service
-  ↓
-Controller
-  ↓
-Model
-  ↓
-Thymeleaf
-  ↓
-HTML 화면
+```sql
+CREATE DATABASE board_db CHARACTER SET utf8mb4;
 ```
 
----
+### 3. `application.yml` (또는 `application.properties`) 설정
 
-## 📌 What I Learned
+`src/main/resources/application.yml`에 본인 환경에 맞게 작성:
 
-이번 프로젝트를 통해 Spring Boot의 기본적인 계층 구조와 데이터 흐름을 이해할 수 있었습니다.
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/board_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+```
 
-특히 다음 개념을 직접 구현하며 익혔습니다.
+> 비밀번호 등 민감한 정보는 환경 변수나 `.gitignore` 처리된 별도 설정 파일로 관리하는 것을 권장합니다.
 
-* `@Controller`를 이용한 HTTP 요청 처리
-* `GET` / `POST` 요청의 차이
-* DTO와 Entity의 역할
-* Service를 통한 비즈니스 로직 처리
-* Spring Data JPA Repository를 이용한 DB 접근
-* Thymeleaf를 이용한 서버 데이터 출력
-* `@PathVariable`을 이용한 URL 데이터 전달
-* `Model`을 이용한 Controller → View 데이터 전달
-* `redirect`를 이용한 페이지 이동
-* JPA/Hibernate를 이용한 MySQL 연동
+### 4. 실행
 
----
+```bash
+./gradlew bootRun
+```
 
-## 🚀 Future Improvements
+브라우저에서 `http://localhost:8080/board/` 접속
 
-기본적인 CRUD 구현을 완료한 후 다음 기능을 추가하며 프로젝트를 발전시킬 예정입니다.
+## 🗺 주요 엔드포인트
 
-* [ ] 쿠키를 이용한 조회수 중복 증가 방지
-* [ ] 잘못된 비밀번호 입력 시 오류 메시지 개선
-* [ ] 게시판 UI/UX 개선
-* [ ] 검색 기능 추가
-* [ ] 페이징 처리
-* [ ] 로그인 및 사용자 인증 기능 추가
+| Method | URL | 설명 | 인증 필요 |
+|---|---|---|---|
+| GET | `/board/` | 게시글 목록 (검색·페이징) | ❌ |
+| GET | `/board/{id}` | 게시글 상세 | ❌ |
+| GET/POST | `/board/save` | 게시글 작성 | ✅ |
+| GET/POST | `/board/update/{id}` | 게시글 수정 (본인 글만) | ✅ |
+| GET/POST | `/board/delete/{id}` | 게시글 삭제 (본인 글만) | ✅ |
+| POST | `/comment/save` | 댓글 작성 | ✅ |
+| POST | `/comment/update` | 댓글 수정 (본인 댓글만) | ✅ |
+| POST | `/comment/delete` | 댓글 삭제 (본인 댓글만) | ✅ |
+| GET/POST | `/member/join` | 회원가입 | ❌ |
+| GET/POST | `/member/login` | 로그인 | ❌ |
+| GET | `/member/logout` | 로그아웃 | ✅ |
 
----
+## 🧠 배운 점 / 트러블슈팅
 
-## 🎯 Purpose
+프로젝트를 진행하며 겪었던 문제와 해결 과정은 별도 문서에 정리했습니다: (포트폴리오 문서 링크 추가)
 
-처음부터 복잡한 기능을 구현하기보다는
-**Spring Boot 웹 애플리케이션의 전체적인 구조와 데이터 흐름을 이해하는 것**을 목표로 시작한 프로젝트입니다.
+주요 항목:
+- GET 요청만으로 삭제가 실행되던 구조를 HTTP 메서드 원칙에 맞게 개선
+- 비밀번호 기반 게시글 인증을 Spring Security 기반 계정 소유권 검증으로 전환
+- Spring Security `SecurityFilterChain` 규칙 순서로 인한 URL 매핑 충돌 해결
+- 페이징 도입 시 목록 번호 계산 로직 재설계
 
-기본 CRUD를 구현한 이후에도 발생하는 문제를 직접 찾아 수정하고 새로운 기능을 추가하면서 Spring Boot에 대한 이해도를 높이는 것을 목표로 하고 있습니다.
+## 📌 향후 개선 방향
+
+- [ ] CSRF 보호 활성화
+- [ ] 테스트 코드 작성 (JUnit, Mockito)
+- [ ] 댓글 목록 조회 N+1 문제 점검
+- [ ] OAuth2 소셜 로그인
+- [ ] 이미지/파일 업로드
+
+## 📄 License
+
+이 프로젝트는 학습 목적으로 제작되었습니다.
